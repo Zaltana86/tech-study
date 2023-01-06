@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("user")
 public class TestController {
     @GetMapping
+
     // http://localhost:8080/user?lang=en_US 通过lang指定语言
     public String getInfo() {
         throw new MyException("user.error");
