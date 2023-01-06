@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ivx.dao.IUserDao">
+
+    <resultMap id="userMap" type="com.ivx.pojo.vo.UserInfo">
+        <id property="uid" column="uid"/>
+        <collection property="permissionList" ofType="com.ivx.pojo.entity.PermissionEntity"/>
+    </resultMap>
+
+    <select id="getUserInfo" resultMap="userMap">
+        SELECT u.uid,
+               u.user_name,
+               u.password,
+               u.full_name,
+               r.role_name,
+               p.permission_code,
+               p.url
+        from `user` u
+                 left join role_user ru on ru.user_id = u.uid
+                 left join role r on r.role_id = ru.role_id
+                 left join role_permission rp on rp.role_id = ru.role_id
+                 left join permission p on p.permission_id = rp.permission_id
+        where u.user_name = #{userName}
+
+    </select>
+</mapper>

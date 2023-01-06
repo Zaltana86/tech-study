@@ -1,0 +1,9 @@
+spring:
+  rabbitmq:
+
+    host: 212.129.223.35
+    port: 5672
+    username: kyler
+    password: 123.com
+    virtual-host: /kgc
+
