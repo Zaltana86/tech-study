@@ -4,6 +4,7 @@ import cn.hutool.poi.word.TableUtil;
 import com.deepoove.poi.XWPFTemplate;
 import com.deepoove.poi.data.RowRenderData;
 import com.deepoove.poi.data.TableRenderData;
+import com.deepoove.poi.data.style.*;
 import com.deepoove.poi.exception.RenderException;
 import com.deepoove.poi.policy.AbstractRenderPolicy;
 import com.deepoove.poi.policy.DynamicTableRenderPolicy;
@@ -17,79 +18,122 @@ import com.deepoove.poi.util.TableTools;
 import com.deepoove.poi.xwpf.BodyContainer;
 import com.deepoove.poi.xwpf.BodyContainerFactory;
 import lombok.SneakyThrows;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.xwpf.usermodel.*;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHeight;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblLayoutType;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTrPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblLayoutType;
+
+import java.math.BigInteger;
+import java.util.List;
 
 
 public class MyDynamicTableRenderPolicy extends AbstractRenderPolicy<TableRenderData> {
+    private XWPFTable table;
+
     /**
      * 渲染表头
      */
     @SneakyThrows
     @Override
     protected void beforeRender(RenderContext<TableRenderData> context) {
+        initTable(context);
+
         ElementTemplate eleTemplate = context.getEleTemplate();
         RunTemplate runTemplate = (RunTemplate) eleTemplate;
         XWPFRun run = runTemplate.getRun();
         run.setText("", 0);
         TableRenderData tableRenderData = context.getData();
-        BodyContainer bodyContainer = BodyContainerFactory.getBodyContainer(run);
-        // 创建表格
-        XWPFTable table = bodyContainer.insertNewTable(run, tableRenderData.obtainRowSize(), tableRenderData.obtainColSize());
+        setTableStyle(tableRenderData);
+        // 设置表格样式
         StyleUtils.styleTable(table, tableRenderData.getTableStyle());
         // 创建表头
-        XWPFTableRow xwpfTableRow = table.insertNewTableRow(0);
+        XWPFTableRow xwpfTableRow = table.getRow(0);
         xwpfTableRow.setRepeatHeader(true);
-        RowRenderData rowRenderData = tableRenderData.getRows().get(0);
-        System.out.println(rowRenderData);
-        TableRenderPolicy.Helper.renderRow(xwpfTableRow, rowRenderData);
-        //
-        // RunTemplate runTemplate = (RunTemplate) context.getEleTemplate();
-        // XWPFRun run = runTemplate.getRun();
-        // // System.out.println(run.getText(0));
-        // run.setText("", 0);
-        // TableRenderData tableRenderData = (TableRenderData) context.getData();
-        // BodyContainer bodyContainer = BodyContainerFactory.getBodyContainer(run);
-        // XWPFTable table = bodyContainer.insertNewTable(run, tableRenderData.obtainRowSize(), tableRenderData.obtainColSize());
-        // StyleUtils.styleTable(table, tableRenderData.getTableStyle());
-        //
-        // int size = table.getRows().size();
-        // for (int i = 0; i < size; i++) {
-        //     RowRenderData rowRenderData = tableRenderData.getRows().get(i);
-        //     TableRenderPolicy.Helper.renderRow(table.getRows().get(i), rowRenderData, StyleUtils.retriveStyle(run));
+        // 设置表格居中
+        setCellAlign(xwpfTableRow);
+        // List<XWPFTableRow> rows = table.getRows();
+        // for (XWPFTableRow row : rows) {
+        //     CTTrPr trPr = row.getCtRow().addNewTrPr();
+        //     CTHeight ht = trPr.addNewTrHeight();
+        //     ht.setVal(1000L);
         // }
+        RowRenderData rowRenderData = tableRenderData.getRows().get(0);
+        setRowStyle(rowRenderData, true);
+
+        TableRenderPolicy.Helper.renderRow(xwpfTableRow, rowRenderData);
+
     }
 
-
-    // @Override
-    // public void render(ElementTemplate eleTemplate, Object data, XWPFTemplate template) {
-    //     // 获取表格对象
-    //     RunTemplate runTemplate = (RunTemplate) eleTemplate;
-    //     XWPFRun run = runTemplate.getRun();
-    //     XWPFTableCell cell = (XWPFTableCell) ((XWPFParagraph) run.getParent()).getBody();
-    //     XWPFTable table = cell.getTableRow().getTable();
-    //     String tagName = eleTemplate.getTagName();
-    //
-    // }
-
-    @Override
-    public void doRender(RenderContext<TableRenderData> context) throws Exception {
-        XWPFTable table = this.getTable(context);
-        XWPFRun run = context.getRun();
-        TableRenderData tableRenderData = context.getData();
-        int size = table.getRows().size();
-        // 表头已经渲染好了，渲染主体
-        for (int i = 1; i < size; i++) {
-            RowRenderData rowRenderData = tableRenderData.getRows().get(i);
-            TableRenderPolicy.Helper.renderRow(table.getRows().get(i), rowRenderData, StyleUtils.retriveStyle(run));
+    private void setCellAlign(XWPFTableRow xwpfTableRow) {
+        List<XWPFTableCell> tableCells = xwpfTableRow.getTableCells();
+        // 设置行高
+        int size = xwpfTableRow.getTableCells().size();
+        CTTrPr trPr = xwpfTableRow.getCtRow().addNewTrPr();
+        CTHeight ht = trPr.addNewTrHeight();
+        ht.setVal(1000L);
+        for (int i = 0; i < size; i++) {
+            XWPFTableCell xwpfTableCell = tableCells.get(i);
+            xwpfTableCell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+            xwpfTableCell.setWidth(WithEnum.values()[i].getWith());
         }
     }
 
-    private XWPFTable getTable(RenderContext<TableRenderData> context) {
+    private void setTableStyle(TableRenderData tableRenderData) {
+        TableStyle tableStyle = new TableStyle();
+        tableStyle.setWidth("120%");
+        tableStyle.setAlign(TableRowAlign.CENTER);
+        // 设置表格不自动重调尺寸适应内容固定表格宽度
+        CTTblLayoutType type = table.getCTTbl().getTblPr().addNewTblLayout();
+        type.setType(STTblLayoutType.FIXED);
+        tableRenderData.setTableStyle(tableStyle);
+    }
+
+    private void setRowStyle(RowRenderData rowRenderData, boolean isHeader) {
+
+
+        Style style = new Style();
+        if (isHeader) {
+            style.setBold(true);
+        }
+        style.setFontFamily("宋体");
+        style.setFontSize(12d);
+
+        ParagraphStyle paragraphStyle = new ParagraphStyle();
+        paragraphStyle.setDefaultTextStyle(style);
+        paragraphStyle.setAlign(ParagraphAlignment.CENTER);
+
+        CellStyle cellStyle = new CellStyle();
+        cellStyle.setDefaultParagraphStyle(paragraphStyle);
+
+        RowStyle rowStyle = new RowStyle();
+        rowStyle.setDefaultCellStyle(cellStyle);
+        rowRenderData.setRowStyle(rowStyle);
+    }
+
+
+    @Override
+    public void doRender(RenderContext<TableRenderData> context) throws Exception {
+        XWPFRun run = context.getRun();
+        TableRenderData tableRenderData = context.getData();
+        int size = tableRenderData.getRows().size();
+        // 表头已经渲染好了，渲染主体
+        for (int i = 1; i < size; i++) {
+            RowRenderData rowRenderData = tableRenderData.getRows().get(i);
+            setRowStyle(rowRenderData, false);
+            // 获取表格的行对象
+            XWPFTableRow xwpfTableRow = table.getRows().get(i);
+            setCellAlign(xwpfTableRow);
+            TableRenderPolicy.Helper.renderRow(xwpfTableRow, rowRenderData, StyleUtils.retriveStyle(run));
+        }
+    }
+
+    private void initTable(RenderContext<TableRenderData> context) {
         TableRenderData tableRenderData = context.getData();
         XWPFRun run = context.getRun();
         BodyContainer bodyContainer = BodyContainerFactory.getBodyContainer(run);
-        System.out.println("1");
-        return bodyContainer.insertNewTable(run, tableRenderData.obtainRowSize(), tableRenderData.obtainColSize());
+        this.table = bodyContainer.insertNewTable(run, tableRenderData.obtainRowSize(), tableRenderData.obtainColSize());
     }
 
 }

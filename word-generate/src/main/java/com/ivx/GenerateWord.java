@@ -7,8 +7,7 @@ import com.deepoove.poi.data.CellRenderData;
 import com.deepoove.poi.data.ParagraphRenderData;
 import com.deepoove.poi.data.RowRenderData;
 import com.deepoove.poi.data.TableRenderData;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -39,10 +38,14 @@ public class GenerateWord {
             tableRenderData.addRow(rowRenderData);
             // list1.add(new Temp(i + "", i * 100 + ""));
             List<CellRenderData> cellRenderDataList = new ArrayList<>();
-            for (int j = 0; j < 2; j++) {
+            for (int j = 0; j < 6; j++) {
                 CellRenderData cellRenderData = new CellRenderData();
                 ParagraphRenderData paragraphRenderData = new ParagraphRenderData();
-                paragraphRenderData.addText("test");
+                if (i == 0) {
+                    paragraphRenderData.addText("標題");
+                } else {
+                    paragraphRenderData.addText("test");
+                }
                 cellRenderData.addParagraph(paragraphRenderData);
                 cellRenderDataList.add(cellRenderData);
             }
