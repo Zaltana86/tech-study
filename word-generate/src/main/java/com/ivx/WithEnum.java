@@ -9,14 +9,17 @@ import lombok.Getter;
 */
 @Getter
 public enum WithEnum {
-    WIDTH1("8.4%"),
-    WIDTH2("19.3%"),
-    WIDTH3("29.4%"),
-    WIDTH4("24%"),
-    WIDTH5("11.8%"),
-    WIDTH6("31%");
-    private final String with;
-    WithEnum(String s) {
-        this.with = s;
+    WIDTH1("序号","8%"),
+    WIDTH2("中文名称","19%"),
+    WIDTH3("INCI名称/英文名称","17%"),
+    WIDTH4("使用目的","15%"),
+    WIDTH5("在《已使用原料目录》中的序号","14%"),
+    WIDTH6("备注","27%");
+    private final String width;
+    private final String title;
+    WithEnum(String title,String width) {
+        this.width = width;
+        this.title = title;
     }
+
 }

@@ -1,31 +1,23 @@
 package com.ivx;
 
-import cn.hutool.poi.word.TableUtil;
-import com.deepoove.poi.XWPFTemplate;
 import com.deepoove.poi.data.RowRenderData;
 import com.deepoove.poi.data.TableRenderData;
 import com.deepoove.poi.data.style.*;
-import com.deepoove.poi.exception.RenderException;
 import com.deepoove.poi.policy.AbstractRenderPolicy;
-import com.deepoove.poi.policy.DynamicTableRenderPolicy;
-import com.deepoove.poi.policy.RenderPolicy;
 import com.deepoove.poi.policy.TableRenderPolicy;
 import com.deepoove.poi.render.RenderContext;
 import com.deepoove.poi.template.ElementTemplate;
 import com.deepoove.poi.template.run.RunTemplate;
 import com.deepoove.poi.util.StyleUtils;
-import com.deepoove.poi.util.TableTools;
 import com.deepoove.poi.xwpf.BodyContainer;
 import com.deepoove.poi.xwpf.BodyContainerFactory;
 import lombok.SneakyThrows;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHeight;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblLayoutType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTrPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblLayoutType;
 
-import java.math.BigInteger;
 import java.util.List;
 
 
@@ -39,10 +31,10 @@ public class MyDynamicTableRenderPolicy extends AbstractRenderPolicy<TableRender
     @Override
     protected void beforeRender(RenderContext<TableRenderData> context) {
         initTable(context);
-
         ElementTemplate eleTemplate = context.getEleTemplate();
         RunTemplate runTemplate = (RunTemplate) eleTemplate;
         XWPFRun run = runTemplate.getRun();
+        // System.out.println(run.getText(0));
         run.setText("", 0);
         TableRenderData tableRenderData = context.getData();
         setTableStyle(tableRenderData);
@@ -53,12 +45,6 @@ public class MyDynamicTableRenderPolicy extends AbstractRenderPolicy<TableRender
         xwpfTableRow.setRepeatHeader(true);
         // 设置表格居中
         setCellAlign(xwpfTableRow);
-        // List<XWPFTableRow> rows = table.getRows();
-        // for (XWPFTableRow row : rows) {
-        //     CTTrPr trPr = row.getCtRow().addNewTrPr();
-        //     CTHeight ht = trPr.addNewTrHeight();
-        //     ht.setVal(1000L);
-        // }
         RowRenderData rowRenderData = tableRenderData.getRows().get(0);
         setRowStyle(rowRenderData, true);
 
@@ -76,7 +62,8 @@ public class MyDynamicTableRenderPolicy extends AbstractRenderPolicy<TableRender
         for (int i = 0; i < size; i++) {
             XWPFTableCell xwpfTableCell = tableCells.get(i);
             xwpfTableCell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-            xwpfTableCell.setWidth(WithEnum.values()[i].getWith());
+            WithEnum value = WithEnum.values()[i];
+            xwpfTableCell.setWidth(value.getWidth());
         }
     }
 
@@ -90,9 +77,11 @@ public class MyDynamicTableRenderPolicy extends AbstractRenderPolicy<TableRender
         tableRenderData.setTableStyle(tableStyle);
     }
 
+    /**
+     * @param rowRenderData 表格数据
+     * @param isHeader 是否是表头
+     */
     private void setRowStyle(RowRenderData rowRenderData, boolean isHeader) {
-
-
         Style style = new Style();
         if (isHeader) {
             style.setBold(true);
@@ -129,11 +118,13 @@ public class MyDynamicTableRenderPolicy extends AbstractRenderPolicy<TableRender
         }
     }
 
+    /**
+     * 创建表格对象
+     */
     private void initTable(RenderContext<TableRenderData> context) {
         TableRenderData tableRenderData = context.getData();
         XWPFRun run = context.getRun();
         BodyContainer bodyContainer = BodyContainerFactory.getBodyContainer(run);
         this.table = bodyContainer.insertNewTable(run, tableRenderData.obtainRowSize(), tableRenderData.obtainColSize());
     }
-
 }
