@@ -26,10 +26,10 @@ public class WSApplication {
     /**
      * 初始化Bean，它会自动注册使用了 @ServerEndpoint 注解声明的 WebSocket endpoint
      */
-    @Bean
-    public ServerEndpointExporter serverEndpointExporter() {
-        return new ServerEndpointExporter();
-    }
+    // @Bean
+    // public ServerEndpointExporter serverEndpointExporter() {
+    //     return new ServerEndpointExporter();
+    // }
     // @Scheduled(cron = "0/1 * * * * *")
     // public void queryState() {
     //     Cache<String, String> loadingCache = LocalCache.loadingCache;

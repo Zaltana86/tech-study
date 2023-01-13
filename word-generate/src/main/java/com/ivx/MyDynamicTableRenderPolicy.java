@@ -62,7 +62,7 @@ public class MyDynamicTableRenderPolicy extends AbstractRenderPolicy<TableRender
         for (int i = 0; i < size; i++) {
             XWPFTableCell xwpfTableCell = tableCells.get(i);
             xwpfTableCell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-            WithEnum value = WithEnum.values()[i];
+            WidthEnum value = WidthEnum.values()[i];
             xwpfTableCell.setWidth(value.getWidth());
         }
     }
@@ -79,7 +79,7 @@ public class MyDynamicTableRenderPolicy extends AbstractRenderPolicy<TableRender
 
     /**
      * @param rowRenderData 表格数据
-     * @param isHeader 是否是表头
+     * @param isHeader      是否是表头
      */
     private void setRowStyle(RowRenderData rowRenderData, boolean isHeader) {
         Style style = new Style();

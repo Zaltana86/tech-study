@@ -2,6 +2,7 @@ package com.ivx;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ivx.entity.User;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -9,11 +10,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -22,13 +27,16 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.ContentResultMatchers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.result.StatusResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import javax.websocket.ContainerProvider;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -42,6 +50,9 @@ import java.util.List;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc // 开启mvc虚拟调用
 public class WebTest {
+    @Resource
+    private JdbcTemplate jdbcTemplate;
+
     @Test
     public void testWeb(@Autowired MockMvc mvc) throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/users");
@@ -86,6 +97,7 @@ public class WebTest {
         // 2. 创建HttpGet对象
         HttpGet httpGet = new HttpGet("http://localhost:8080/users/hello");
         CloseableHttpResponse response = null;
+        log.info("hello");
         try {
             // 3. 执行GET请求
             response = httpClient.execute(httpGet);
@@ -109,10 +121,29 @@ public class WebTest {
             }
         }
     }
+
     @Value("${test.a}")
-    private String a;
+    private List<Object> a;
+
     @Test
     public void test1() {
         System.out.println(a);
+    }
+
+    @Transactional
+    @Test
+    public void test() {
+        HashSet<A> aSet = new HashSet<>();
+        String sql = "select value from temp where id = 1";
+        A a = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(A.class)).get(0);
+        aSet.add(a);
+        aSet.remove(a);
+        System.out.println(aSet + "=====");
+    }
+
+    @Data
+    static
+    class A {
+        private String a;
     }
 }

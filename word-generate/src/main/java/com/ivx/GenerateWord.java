@@ -10,6 +10,7 @@ import com.deepoove.poi.data.ParagraphRenderData;
 import com.deepoove.poi.data.RowRenderData;
 import com.deepoove.poi.data.TableRenderData;
 import com.deepoove.poi.xwpf.NiceXWPFDocument;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.xmlbeans.XmlCursor;
@@ -17,7 +18,11 @@ import org.junit.Test;
 
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author skyler&lt;kl142857h@163.com&gt;
@@ -65,9 +70,11 @@ public class GenerateWord {
         module.put("title1", "标题2");
         module.put("title2", "标题3");
         module.put("title3", "标题4");
-        String filePath = System.getProperty("user.dir") + "/resource/";
 
+        String filePath = System.getProperty("user.dir") + "/resource/";
         XWPFTemplate template0 = XWPFTemplate.compile(filePath + "template.docx");
+
+        // 模板变量初始化
         NiceXWPFDocument xwpfDocument = template0.getXWPFDocument();
         List<List<String>> runTextList = new ArrayList<>();
         List<String> runTexts = new ArrayList<>();
@@ -78,11 +85,20 @@ public class GenerateWord {
         runTextList.add(runTexts);
         initTempalte(xwpfDocument, runTextList);
 
+
         XWPFTemplate template1 = XWPFTemplate.compile(xwpfDocument, configure);
-        System.out.println(template1.getXWPFDocument().getParagraphs().size());
-        template1.render(module);
+        // 10mb
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024 * 1024 * 10);
+
+        template1.render(module, byteArrayOutputStream);
+        // template1.write(byteArrayOutputStream);
+        byteArrayOutputStream.writeTo(new FileOutputStream(filePath + "output.docx"));
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        // NiceXWPFDocument xwpfDocument1 = template1.getXWPFDocument();
         // 输出文档
-        template1.writeAndClose(new FileOutputStream(filePath + "output.docx"));
+        AddStamp.creatSealDocument(byteArrayInputStream);
+        // template1.writeAndClose(new FileOutputStream(filePath + "output.docx"));
     }
 
     private static void initTempalte(XWPFDocument xwpfDocument, List<List<String>> runTextList) throws IOException {
@@ -100,12 +116,8 @@ public class GenerateWord {
                     String text = xwpfRun.getText(0);
                     text = stripBracket(text);
                     if (isSimilarTable(runText, text)) {
-                        XmlCursor cursor = xwpfParagraph.getCTP().newCursor();
-                        if (runText.equals(text)) {
-                            cursorRunList.put(cursor, addBracket(text + 9));
-                            continue;
-                        }
                         // 獲取當前游標
+                        XmlCursor cursor = xwpfParagraph.getCTP().newCursor();
                         cursorRunList.put(cursor, addBracket(runText));
                     }
                 }
@@ -122,6 +134,7 @@ public class GenerateWord {
             Map.Entry<XmlCursor, String> xmlCursorStringEntry = entries.get(i);
             XmlCursor cursor = xmlCursorStringEntry.getKey();
             XWPFParagraph xwpfParagraph = xwpfDocument.insertNewParagraph(cursor);
+            // 设置第一个标题的模板变量
             if (i == entries.size() - 1) {
                 XWPFRun run = xwpfParagraph.createRun();
                 run.setText("{{title" + (entries.size() - i - 1) + "}}");
@@ -159,7 +172,7 @@ public class GenerateWord {
         for (int i = 0; i < 6; i++) {
             CellRenderData cellRenderData = new CellRenderData();
             ParagraphRenderData paragraphRenderData = new ParagraphRenderData();
-            WithEnum value = WithEnum.values()[i];
+            WidthEnum value = WidthEnum.values()[i];
             paragraphRenderData.addText(value.getTitle());
             cellRenderData.addParagraph(paragraphRenderData);
             cellRenderDataList.add(cellRenderData);
@@ -174,9 +187,53 @@ public class GenerateWord {
         @Data
         class A {
             private String aA;
+            private TableRenderData a;
         }
         A a = new A();
         a.setAA("a");
+        a.setA(new TableRenderData());
         System.out.println(BeanUtil.beanToMap(a, false, false));
+    }
+
+    @Test
+    public void testEnum() throws Exception {
+        WidthEnum[] widthEnum = WidthEnum.class.getEnumConstants();
+        for (WidthEnum anEnum : widthEnum) {
+            Enum<WidthEnum> e = anEnum;
+
+            System.out.println(anEnum);
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    class A {
+        private String a;
+    }
+
+    @Test
+    public void testDistinct() {
+        List<A> aList = new ArrayList<>();
+        aList.add(new A("1"));
+        aList.add(new A("1"));
+        aList.add(new A("3"));
+        aList.add(new A("2"));
+        aList.add(new A("1"));
+        aList.add(new A("3"));
+        List<A> collect = aList.stream().filter(distinctByKey(A::getA)).collect(Collectors.toList());
+        System.out.println(collect);
+    }
+
+
+    private Predicate<? super A> distinctByKey(Function<? super A, Object> function) {
+        // HashSet<Object> seen = new HashSet<>();    // 为什么只调用一次
+        HashSet<Object> seen = new HashSet<Object>() {
+            @Override
+            public boolean add(Object o) {
+                System.out.println("here");
+                return super.add(o);
+            }
+        };
+        return t -> seen.add(function.apply(t));
     }
 }

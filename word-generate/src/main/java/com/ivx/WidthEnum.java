@@ -5,10 +5,10 @@ import lombok.Getter;
 /**
  * @author skyler&lt;kl142857h@163.com&gt;
  * @since 2023/1/8 18:01
- * @apiNote
+ * @apiNote 表格宽度数据
 */
 @Getter
-public enum WithEnum {
+public enum WidthEnum {
     WIDTH1("序号","8%"),
     WIDTH2("中文名称","19%"),
     WIDTH3("INCI名称/英文名称","17%"),
@@ -17,9 +17,8 @@ public enum WithEnum {
     WIDTH6("备注","27%");
     private final String width;
     private final String title;
-    WithEnum(String title,String width) {
+    WidthEnum(String title, String width) {
         this.width = width;
         this.title = title;
     }
-
 }
