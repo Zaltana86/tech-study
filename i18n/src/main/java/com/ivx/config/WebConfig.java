@@ -14,7 +14,7 @@ import java.util.Locale;
 public class WebConfig implements WebMvcConfigurer {
 
     /**
-     * 默认拦截器 其中lang表示切换语言的参数名
+     * 其中lang表示切换语言的参数名
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -23,6 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(localeInterceptor);
     }
 
+    // 默认拦截器
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver localeResolver = new SessionLocaleResolver();
