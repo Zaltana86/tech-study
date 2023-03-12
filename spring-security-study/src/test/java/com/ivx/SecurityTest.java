@@ -41,10 +41,12 @@ public class SecurityTest {
 
     @Test
     public void testBcrypt() {
-        String gensalt = BCrypt.gensalt();
-        System.out.println(gensalt);
-        String encrypt1 = BCrypt.hashpw("123.com", gensalt);// 生成随机的盐，但是都能匹配
-        String encrypt2 = BCrypt.hashpw("123.com", gensalt);
+        String gensalt1 = BCrypt.gensalt();
+        String gensalt2 = BCrypt.gensalt();
+        System.out.println(gensalt1);
+        System.out.println(gensalt2);
+        String encrypt1 = BCrypt.hashpw("123.com", gensalt1);// 生成随机的盐，但是都能匹配
+        String encrypt2 = BCrypt.hashpw("123.com", gensalt2);
         System.out.println(encrypt1);
         //$2a$10$dew9aDvdGbK01xsIGmBwG.pcYfekhuP/NQFyLsLveHiAmArPXlr4q
         System.out.println(encrypt2);

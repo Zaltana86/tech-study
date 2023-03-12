@@ -12,6 +12,13 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 
+
+import javax.websocket.OnClose;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+
+
 /**
  * @author <a href='mailto:kl142857h@163.com'>kl142857h@163.com&lt;skyler&gt;</skyler></a>
  * @apiNote websocket的使用
@@ -25,7 +32,7 @@ public class WebSocketUtil {
 
     private Session session;
 
-    private static final CopyOnWriteArraySet<WebSocketUtil> webSocketSet = new CopyOnWriteArraySet<>();
+    public static final CopyOnWriteArraySet<WebSocketUtil> webSocketSet = new CopyOnWriteArraySet<>();
 
     //连接时执行
     @OnOpen
@@ -33,40 +40,41 @@ public class WebSocketUtil {
         this.session = session;
         this.uid = uid;
         webSocketSet.add(this);
-        log.debug("链接成功,用户id{}", uid);
+        log.info("链接成功,用户id{}", uid);
     }
 
     //关闭时执行
     @OnClose
     public void onClose() {
-        log.debug("连接：{} 关闭", this.uid);
+        log.info("连接：{} 关闭", this.uid);
         webSocketSet.remove(this);
     }
 
     //收到消息时执行
     @OnMessage
-    public void onMessage(String message, Session session) throws IOException {
+    public void onMessage(String message) {
         System.out.println("message:" + message);
     }
-
 
 
     //连接错误时执行
     @OnError
     public void onError(Session session, Throwable error) {
-        log.debug("用户id为：{}的连接发送错误", this.uid);
+        log.error("用户id为：{}的连接发送错误", this.uid);
         error.printStackTrace();
     }
 
     /**
      * 发送消息
      */
-    public void sendMessage(String message, String uid) throws IOException {
+    public boolean sendMessage(String message, String uid) throws IOException {
+        boolean result = false;
         for (WebSocketUtil webSocketUtil : webSocketSet) {
             if (Objects.equals(webSocketUtil.uid, uid)) {
-                System.out.println(uid);
                 webSocketUtil.session.getBasicRemote().sendText(message);
+                result = true;
             }
         }
+        return result;
     }
 }

@@ -23,7 +23,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 // @EnableWebSecurity
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true,securedEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     // @Bean
     // public UserDetailsService userDetailsService() {
@@ -49,10 +49,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         Customizer<CsrfConfigurer<HttpSecurity>> customizer = csrfCustomizer -> {
-            RequestMatcher requestMatcher = new IpAddressMatcher("127.0.0.1");
+            RequestMatcher requestMatcher = new IpAddressMatcher("localhost");
             csrfCustomizer.ignoringRequestMatchers(requestMatcher);  // 允许本地访问
         };
-        http.csrf(customizer) // 跨域访问
+        http.csrf() // 跨域访问
+                .disable()
                 .authorizeRequests()
                 // .antMatchers("/user/r/r1").hasAuthority("p1") // 基于方法的授权
                 // .antMatchers("/user/r/r2").hasAuthority("p2")
@@ -60,7 +61,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll() // 除了r资源全部可以访问
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)  // 如果是分布式的可以设置为never
-                .and().formLogin()  // 允许表单登陆访问
+                .and()
+                .formLogin()  // 允许表单登陆访问
+                .loginPage("/login-view")
+                .loginProcessingUrl("/login")
                 .successForwardUrl("/user/login_success");   // 登陆成功后的页面地址
     }
 }

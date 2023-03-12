@@ -2,10 +2,6 @@ package com.ivx;
 
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.http.HttpConnection;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpUtil;
 import com.baidu.aip.ocr.AipOcr;
 import com.baidu.aip.util.Base64Util;
 import com.ivx.config.OrcConfig;
