@@ -4,7 +4,7 @@ server:
 spring:
   mvc:
     view:
-      prefix: /WEB-INFO/views
+      prefix: /WEB-INF/views/
       suffix: .jsp
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/test

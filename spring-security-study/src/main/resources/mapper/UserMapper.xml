@@ -5,7 +5,9 @@
 
     <resultMap id="userMap" type="com.ivx.pojo.vo.UserInfo">
         <id property="uid" column="uid"/>
-        <collection property="permissionList" ofType="com.ivx.pojo.entity.PermissionEntity"/>
+        <collection property="permissionList" ofType="com.ivx.pojo.entity.PermissionEntity">
+            <id property="permissionId" column="permission_id"/>
+        </collection>
     </resultMap>
 
     <select id="getUserInfo" resultMap="userMap">
@@ -14,6 +16,7 @@
                u.password,
                u.full_name,
                r.role_name,
+               p.permission_id,
                p.permission_code,
                p.url
         from `user` u

@@ -4,8 +4,13 @@ import cn.hutool.core.util.StrUtil;
 import org.apache.poi.ss.formula.functions.T;
 import org.junit.Test;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.apache.poi.xwpf.usermodel.*;
+import org.apache.poi.xwpf.usermodel.*;
 
 /**
  * @author skyler&lt;kl142857h@163.com&gt;
@@ -14,10 +19,8 @@ import java.util.Iterator;
  */
 
 public class StringTest {
-    @Test
-    public void testString() {
-        // double similar = StrUtil.similar("你玩完了", "我玩完了");
-        // System.out.println(similar);
-    }
 
+    public static void main(String[] args) throws Exception {
+
+    }
 }

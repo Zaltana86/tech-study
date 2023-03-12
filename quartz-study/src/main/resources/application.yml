@@ -1,3 +1,7 @@
-logging:
-  level:
-    com.ivx: info
+spring:
+  datasource:
+    username: root
+    password: 123.com
+    url: 127.0.0.1:3306/test
+
+
