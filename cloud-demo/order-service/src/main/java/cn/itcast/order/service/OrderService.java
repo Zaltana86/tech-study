@@ -20,7 +20,7 @@ public class OrderService {
         // 1.查询订单
         Order order = orderMapper.findById(orderId);
         // 2.用Feign远程调用
-        User user = userClient.findById(order.getUserId());
+        User user = userClient.findById(order.getUserId(),null);
         // 3.封装user到Order
         order.setUser(user);
         // 4.返回

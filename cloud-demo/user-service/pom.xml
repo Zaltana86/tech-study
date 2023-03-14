@@ -40,6 +40,22 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
+        <!--实现feign接口-->
+        <dependency>
+            <groupId>cn.itcast.demo</groupId>
+            <artifactId>feign-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <!--高版本需要引入这两个依赖-->
+        <!--<dependency>-->
+        <!--    <groupId>org.springframework.cloud</groupId>-->
+        <!--    <artifactId>spring-cloud-starter-bootstrap</artifactId>-->
+        <!--</dependency>-->
+        <!--高版本排除了ribben-->
+        <!--<dependency>-->
+        <!--    <groupId>org.springframework.cloud</groupId>-->
+        <!--    <artifactId>spring-cloud-starter-loadbalancer</artifactId>-->
+        <!--</dependency>-->
     </dependencies>
     <build>
         <finalName>app</finalName>

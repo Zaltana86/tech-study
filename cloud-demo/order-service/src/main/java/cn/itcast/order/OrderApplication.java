@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 @MapperScan("cn.itcast.order.mapper")
 @SpringBootApplication
-@EnableFeignClients(clients = UserClient.class,defaultConfiguration = DefaultFeignConfiguration.class)
+@EnableFeignClients(clients = UserClient.class, defaultConfiguration = DefaultFeignConfiguration.class)
 public class OrderApplication {
 
     public static void main(String[] args) {
@@ -28,7 +28,7 @@ public class OrderApplication {
         return new RestTemplate();
     }
 
-   /* @Bean
+   /* @Bean // 这个是针对所有的服务的负载均衡策略
     public IRule randomRule() {
         return new RandomRule();
     }*/

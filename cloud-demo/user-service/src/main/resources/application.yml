@@ -1,17 +1,22 @@
 server:
-  port: 8081
+  port: 8080
+
 spring:
   datasource:
-    url: jdbc:mysql://mysql:3306/cloud_user?useSSL=false
+    url: jdbc:mysql://localhost:3306/cloud_user?useSSL=false
     username: root
-    password: 123
+    password: 123.com
     driver-class-name: com.mysql.jdbc.Driver
-  shardingsphere:
-    sharding:
-      default-database-strategy:
-      tables:
+
+#  shardingsphere:
+#    sharding:
+#      default-database-strategy:
+#      tables:
+
+#  cloud:
+#    nacos:
 #      discovery:
-#        cluster-name: HZ
+#        cluster-name: SH
 mybatis:
   type-aliases-package: cn.itcast.user.pojo
   configuration:
