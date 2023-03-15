@@ -1,6 +1,5 @@
-package cn.itcast.user.web;
+package cn.itcast.user.web.controller;
 
-import cn.itcast.feign.clients.UserClient;
 import cn.itcast.feign.pojo.User;
 import cn.itcast.user.config.PatternProperties;
 import cn.itcast.user.service.UserService;
@@ -14,7 +13,8 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 @RestController
 // @RefreshScope
-public class UserController implements UserClient {
+@RequestMapping("user")
+public class UserController  {
 
     @Autowired
     private UserService userService;
@@ -41,9 +41,9 @@ public class UserController implements UserClient {
      * @param id 用户id
      * @return 用户
      */
-    @Override
-    public User findById(Long id, String truth) {
-        System.out.println("truth: " + truth);
+    @GetMapping("{id}")
+    public User findById(@PathVariable Long id,@RequestHeader(value = "Truth", required = false) String truth) {
+        System.out.println(truth);
         return userService.queryById(id);
     }
 }
