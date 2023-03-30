@@ -36,15 +36,15 @@ public class MyDynamicTableRenderPolicy extends AbstractRenderPolicy<TableRender
         XWPFRun run = runTemplate.getRun();
         // System.out.println(run.getText(0));
         run.setText("", 0);
-        TableRenderData tableRenderData = context.getData();
-        setTableStyle(tableRenderData);
         // 设置表格样式
-        StyleUtils.styleTable(table, tableRenderData.getTableStyle());
+        setTableStyle();
         // 创建表头
         XWPFTableRow xwpfTableRow = table.getRow(0);
         xwpfTableRow.setRepeatHeader(true);
         // 设置表格居中
         setCellAlign(xwpfTableRow);
+
+        TableRenderData tableRenderData = context.getData();
         RowRenderData rowRenderData = tableRenderData.getRows().get(0);
         setRowStyle(rowRenderData, true);
 
@@ -67,14 +67,16 @@ public class MyDynamicTableRenderPolicy extends AbstractRenderPolicy<TableRender
         }
     }
 
-    private void setTableStyle(TableRenderData tableRenderData) {
-        TableStyle tableStyle = new TableStyle();
-        tableStyle.setWidth("120%");
-        tableStyle.setAlign(TableRowAlign.CENTER);
+    private void setTableStyle() {
+        // TableStyle tableStyle = new TableStyle();
+        // tableStyle.setWidth("120%");
+        // tableStyle.setAlign(TableRowAlign.CENTER);
+        // StyleUtils.styleTable(table, tableStyle);
+        table.setWidth("120%");
+        table.setTableAlignment(TableRowAlign.CENTER);
         // 设置表格不自动重调尺寸适应内容固定表格宽度
         CTTblLayoutType type = table.getCTTbl().getTblPr().addNewTblLayout();
         type.setType(STTblLayoutType.FIXED);
-        tableRenderData.setTableStyle(tableStyle);
     }
 
     /**
