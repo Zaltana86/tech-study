@@ -14,10 +14,10 @@ public class RabbitmqUtil {
     public static Connection getConnection() throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
         // 配置连接参数
-        factory.setHost("212.129.223.35");
+        factory.setHost("192.168.58.129");
         factory.setPort(5672);
-        factory.setVirtualHost("/kgc");
-        factory.setUsername("kyler");
+        factory.setVirtualHost("/");
+        factory.setUsername("skyler");
         factory.setPassword("123.com");
         return factory.newConnection();
     }

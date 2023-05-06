@@ -1,9 +1,11 @@
 spring:
   rabbitmq:
-
-    host: 212.129.223.35
+    host: 192.168.58.129
     port: 5672
-    username: kyler
+    username: skyler
     password: 123.com
-    virtual-host: /kgc
+    virtual-host: /
+    listener:
+      simple:
+        prefetch: 1 # 配置消息预取，每个消费者消费完然后再取不要一下子拿太多
 
