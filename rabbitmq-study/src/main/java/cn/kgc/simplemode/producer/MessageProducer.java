@@ -18,8 +18,9 @@ public class MessageProducer {
     public static void main(String[] args) throws Exception {
         Connection connection = RabbitmqUtil.getConnection();
         Channel channel = connection.createChannel(); // 创建信道
+        channel.queueDeclare("simple.queue", false, false, false, null);
         for (int i = 0; i < 50; i++) {
-            channel.basicPublish("", "queue1", MessageProperties.PERSISTENT_TEXT_PLAIN, ("helloworld" + i).getBytes(StandardCharsets.UTF_8));
+            channel.basicPublish("", "simple.queue", MessageProperties.PERSISTENT_TEXT_PLAIN, ("helloworld" + i).getBytes(StandardCharsets.UTF_8));
         }
         System.out.println("消息发送完毕");
         // 释放资源

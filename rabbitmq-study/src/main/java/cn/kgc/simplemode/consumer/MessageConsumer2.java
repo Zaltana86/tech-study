@@ -18,6 +18,8 @@ public class MessageConsumer2 {
         Connection connection = RabbitmqUtil.getConnection();
         Channel channel = connection.createChannel();
         channel.basicQos(1);  // 每次取一个消息
+        String queueName = "simple.queue";
+        channel.queueDeclare(queueName, false, false, false, null);
         DefaultConsumer consumer = new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
@@ -32,6 +34,6 @@ public class MessageConsumer2 {
             }
         };
         // 关闭自动确认
-        channel.basicConsume("queue1", false, consumer);
+        channel.basicConsume(queueName, false, consumer);
     }
 }
