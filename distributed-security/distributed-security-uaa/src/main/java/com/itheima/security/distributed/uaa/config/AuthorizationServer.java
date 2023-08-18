@@ -128,19 +128,19 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
     }
 
     public static void main(String[] args) {
-        // BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        // System.out.println(bCryptPasswordEncoder.encode("secret"));
-        List<Integer> integerList = new ArrayList<Integer>() {{
-            add(1);
-            add(2);
-            add(3);
-        }};
-        Integer[] strings = integerList.toArray(new Integer[2]);
-        // System.out.println(strings[0]);
-        // System.out.println(Arrays.toString(strings));
-        Integer[] integers = new Integer[3];
-        System.arraycopy(strings,0, integers,0,strings.length);
-        System.out.println(Arrays.toString(integers));
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        System.out.println(bCryptPasswordEncoder.encode("secret"));
+        // List<Integer> integerList = new ArrayList<Integer>() {{
+        //     add(1);
+        //     add(2);
+        //     add(3);
+        // }};
+        // Integer[] strings = integerList.toArray(new Integer[2]);
+        // // System.out.println(strings[0]);
+        // // System.out.println(Arrays.toString(strings));
+        // Integer[] integers = new Integer[3];
+        // System.arraycopy(strings,0, integers,0,strings.length);
+        // System.out.println(Arrays.toString(integers));
 
     }
     // 获取授权码 http://localhost:53020/uaa/oauth/authorize?client_id=c1&response_type=code&scope=ROLE_API&redirect_uri=http://www.baidu.com

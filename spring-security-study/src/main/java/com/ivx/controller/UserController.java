@@ -28,7 +28,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('p1')")  // 这个表达式可以取容器对象
     @GetMapping(value = "r/r1", produces = "text/plain;charset=UTF-8")
     public String r1() {
-        userService.testAuthMethod();
+        // userService.testAuthMethod(); // service 的方法也可以拦截
         return getUserName() + "访问资源r1";
     }
 
@@ -42,6 +42,11 @@ public class UserController {
     @PostMapping(value = "/login_success", produces = "text/plain;charset=UTF-8")  // 这个编码必须是大写
     public String success() {
         return getUserName() + "登陆成功！";
+    }
+    // 登陆失败
+    @PostMapping("/error")
+    public String error() {
+        return "用户名或账号错误！";
     }
 
     private String getUserName() {

@@ -3,6 +3,7 @@ package com.miaofan;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -33,13 +34,20 @@ public class EasyPoiTest1 {
         private String testProject;
         private String ifComplete;
         private String remark;
+        private String recordCodeList;
+        private String codeList;
+        private String remarkList;
+        private String testProjectList;
     }
 
     public static void main(String[] args) throws IOException {
         Map<String, List<Order>> orderMap = getOrderListMap("表1.xlsx");
         Map<String, List<Order>> orderMap2 = getOrderListMap("表2.xlsx");
+        // System.out.println(orderMap);
+        // System.out.println("===================");
+        // System.out.println(orderMap2);
         Set<Map.Entry<String, List<Order>>> entries = orderMap.entrySet();
-        Set<Map.Entry<String, List<Order>>> entries2 = orderMap.entrySet();
+        Set<Map.Entry<String, List<Order>>> entries2 = orderMap2.entrySet();
         TemplateExportParams templateExportParams = new TemplateExportParams(System.getProperty("user.dir") + "/excel/test.xlsx");
         for (Map.Entry<String, List<Order>> entry : entries) {
             String entrustClient = entry.getKey().trim();
@@ -57,12 +65,24 @@ public class EasyPoiTest1 {
                 // System.out.println(toBeSort);
                 List<Order> orders2 = new ArrayList<>();
                 for (Order order : orders) {
-                    for (Order order2 : toBeSort) {
-                        String productName = order.getProductName();
-                        if (productName != null && productName.equals(order2.getProductName())) {
-                            orders2.add(order2);
-                        }
-                    }
+                    // for (Order order2 : toBeSort) {
+                    //     String productName = order.getProductName();
+                    //     if (productName != null && productName.equals(order2.getProductName())) {
+                    //         orders2.add(order2);
+                    //     }
+                    // }
+                    String productName = order.getProductName();
+
+                    List<Order> collect = toBeSort.stream().filter(o -> o.getProductName() != null && o.getProductName().equals(productName)).collect(Collectors.toList());
+                    String recordCodeList = StrUtil.join("-", collect.stream().map(Order::getRecordCode).collect(Collectors.toList()));
+                    String codeList = StrUtil.join("-", collect.stream().map(Order::getCode).collect(Collectors.toList()));
+                    String remarkList = StrUtil.join("-", collect.stream().map(Order::getRemark).collect(Collectors.toList()));
+                    String testProjectList = StrUtil.join("-", collect.stream().map(Order::getTestProject).collect(Collectors.toList()));
+                    order.setRecordCodeList(recordCodeList);
+                    order.setCodeList(codeList);
+                    order.setRemarkList(remarkList);
+                    order.setTestProjectList(testProjectList);
+                    orders2.add(order);
                 }
                 resultMap.put("orders2", orders2);
                 // System.out.println(orders2);
@@ -80,7 +100,7 @@ public class EasyPoiTest1 {
                 Order order = orders.get(i);
                 order.setIndex(i + 1);
             }
-            if(!orderMap.containsKey(entrustClient)) {
+            if (!orderMap.containsKey(entrustClient)) {
                 Map<String, Object> resultMap = new HashMap<>();
                 resultMap.put("entrustClient", entrustClient);
                 resultMap.put("orders", orders);
@@ -107,18 +127,41 @@ public class EasyPoiTest1 {
 
 
         List<Order> orderList = excelReader.read(0, 0, Order.class);
-        for (Order order : orderList) {
-            order.setEntrustClient(order.getEntrustClient().trim());
-        }
         Map<String, List<Order>> orderListMap = orderList.stream().collect(Collectors.groupingBy(Order::getEntrustClient));
         Map<String, List<Order>> newMap = new HashMap<>();
         for (String s : orderListMap.keySet()) {
             List<Order> orders = orderListMap.get(s);
             for (Order order : orders) {
-                order.setProductName(order.getProductName().trim());
+                String entrustClient = order.getEntrustClient();
+                order.setEntrustClient(trimStr(entrustClient));
+
+                String productName = order.getProductName();
+                order.setProductName(trimStr(productName));
+
+                String recordCode = order.getRecordCode();
+                order.setRecordCode(trimStr(recordCode));
+
+                String code = order.getCode();
+                order.setCode(trimStr(code));
+
+                String producer = order.getProducer();
+                order.setProducer(trimStr(producer));
+
+                String testProject = order.getTestProject();
+                order.setTestProject(trimStr(testProject));
+
+                String remark = order.getRemark();
+                order.setRemark(trimStr(remark));
             }
             newMap.put(s.trim(), orders);
         }
         return newMap;
+    }
+
+    private static String trimStr(String str) {
+        if (StrUtil.isNotBlank(str)) {
+            return str.trim();
+        }
+        return null;
     }
 }

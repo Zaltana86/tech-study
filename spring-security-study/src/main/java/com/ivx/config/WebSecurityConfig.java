@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -23,7 +24,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 // @EnableWebSecurity
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true,securedEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true,securedEnabled = true)// 方法授权和路径授权
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     // @Bean
     // public UserDetailsService userDetailsService() {
@@ -54,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         };
         http.csrf() // 跨域访问
                 .disable()
-                .authorizeRequests()
+                .authorizeRequests() // 认证请求
                 // .antMatchers("/user/r/r1").hasAuthority("p1") // 基于方法的授权
                 // .antMatchers("/user/r/r2").hasAuthority("p2")
                 .antMatchers("/user/r/**").authenticated()  // r资源都需要认证
@@ -65,6 +66,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()  // 允许表单登陆访问
                 .loginPage("/login-view")
                 .loginProcessingUrl("/login")
+                .failureForwardUrl("/user/error")
                 .successForwardUrl("/user/login_success");   // 登陆成功后的页面地址
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new BCryptPasswordEncoder().encode("123.com"));
     }
 }

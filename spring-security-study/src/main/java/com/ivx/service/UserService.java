@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    @PreAuthorize("hasAuthority('p1')")
+    @PreAuthorize("hasAuthority('p2')")
     public void testAuthMethod() {
         System.out.println("hello");
     }
